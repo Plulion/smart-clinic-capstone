@@ -1,0 +1,9 @@
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/models/Doctor.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/controllers/PrescriptionController.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/models/Appointment.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/repo/PatientRepository.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/services/DoctorService.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/controllers/DoctorController.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/services/AppointmentService.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/services/TokenService.java
+/Users/pedrolulion/Desktop/smart-clinic-capstone/src/main/java/com/project/back_end/models/Patient.java

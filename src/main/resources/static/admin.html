@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Doctores - Webfinanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card-doctor { border-left: 5px solid #0d6efd; transition: 0.3s; }
+        .navbar-brand { font-weight: bold; } /* Corrección del error en rojo */
+    </style>
+</head>
+<body class="container py-5">
+    <h1 class="text-center mb-5">Administración de Doctores</h1>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white"><h4 class="mb-0" id="formTitle">Registrar Doctor</h4></div>
+                <div class="card-body">
+                    <form id="doctorForm">
+                        <input type="hidden" id="docId"> <div class="mb-3">
+                            <label class="form-label fw-bold">Nombre Completo:</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Especialidad:</label>
+                            <input type="text" id="specialty" class="form-control" required>
+                        </div>
+                        <button type="submit" id="btnSubmit" class="btn btn-primary w-100">Guardar Doctor</button>
+                        <button type="button" id="btnCancel" class="btn btn-secondary w-100 mt-2 d-none" onclick="cancelEdit()">Cancelar Edición</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lista" class="row g-4"></div>
+
+    <script>
+        async function cargarDoctores() {
+            const listaDiv = document.getElementById('lista');
+            const res = await fetch('/api/doctors/all');
+            const doctores = await res.json();
+            listaDiv.innerHTML = doctores.map(doc => `
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100 card-doctor">
+                        <div class="card-body">
+                            <h5 class="text-primary">${doc.name}</h5>
+                            <p><strong>Especialidad:</strong> ${doc.specialty}</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-warning" onclick="editDoctor(${doc.id}, '${doc.name}', '${doc.specialty}')">Editar</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="eliminarDoctor(${doc.id})">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        document.getElementById('doctorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('docId').value;
+            const data = { name: document.getElementById('name').value, specialty: document.getElementById('specialty').value };
+            
+            const url = id ? `/api/doctors/update/${id}` : '/api/doctors/add';
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            cancelEdit();
+            cargarDoctores();
+        });
+
+        function editDoctor(id, name, specialty) {
+            document.getElementById('docId').value = id;
+            document.getElementById('name').value = name;
+            document.getElementById('specialty').value = specialty;
+            document.getElementById('formTitle').innerText = "Editar Doctor";
+            document.getElementById('btnSubmit').innerText = "Actualizar Cambios";
+            document.getElementById('btnCancel').classList.remove('d-none');
+            window.scrollTo(0, 0);
+        }
+
+        function cancelEdit() {
+            document.getElementById('doctorForm').reset();
+            document.getElementById('docId').value = '';
+            document.getElementById('formTitle').innerText = "Registrar Doctor";
+            document.getElementById('btnSubmit').innerText = "Guardar Doctor";
+            document.getElementById('btnCancel').classList.add('d-none');
+        }
+
+        async function eliminarDoctor(id) {
+            if(confirm('¿Seguro que desea eliminar este registro?')) {
+                await fetch(`/api/doctors/delete/${id}`, { method: 'DELETE' });
+                cargarDoctores();
+            }
+        }
+
+        window.onload = cargarDoctores;
+    </script>
+</body>
+</html>

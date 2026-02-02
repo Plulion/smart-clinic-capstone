@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamiento - Smart Clinic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card-appointment { border-left: 5px solid #0dcaf0; }
+    </style>
+</head>
+<body class="container py-5">
+    <h1 class="text-center mb-5">Gestión de Citas Médicas</h1>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-info text-white"><h4 class="mb-0" id="formTitle">Agendar Cita</h4></div>
+                <div class="card-body">
+                    <form id="appointmentForm">
+                        <input type="hidden" id="appId">
+                        <div class="mb-3">
+                            <label class="form-label">Doctor:</label>
+                            <select id="doctorSelect" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Paciente:</label>
+                            <select id="patientSelect" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha y Hora:</label>
+                            <input type="datetime-local" id="appTime" class="form-control" required>
+                        </div>
+                        <button type="submit" id="btnSubmit" class="btn btn-info w-100 text-white">Confirmar Cita</button>
+                        <button type="button" id="btnCancel" class="btn btn-secondary w-100 mt-2 d-none" onclick="resetForm()">Cancelar Edición</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="appointmentList" class="row g-4"></div>
+
+    <script>
+        async function loadData() {
+            const [resDocs, resPats, resApps] = await Promise.all([
+                fetch('/api/doctors/all'), fetch('/api/patients/all'), fetch('/api/appointments/all')
+            ]);
+            
+            const doctors = await resDocs.json();
+            const patients = await resPats.json();
+            const appointments = await resApps.json();
+
+            document.getElementById('doctorSelect').innerHTML = doctors.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+            document.getElementById('patientSelect').innerHTML = patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            
+            renderAppointments(appointments);
+        }
+
+        function renderAppointments(data) {
+            const listDiv = document.getElementById('appointmentList');
+            listDiv.innerHTML = data.map(a => `
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 card-appointment">
+                        <div class="card-body">
+                            <h6>Dr. ${a.doctor.name} - Paciente: ${a.patient.name}</h6>
+                            <p class="small text-muted">${new Date(a.appointmentTime).toLocaleString()}</p>
+                            <button class="btn btn-sm btn-outline-warning" onclick="editApp(${a.id}, ${a.doctor.id}, ${a.patient.id}, '${a.appointmentTime}')">Reprogramar</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteApp(${a.id})">Cancelar</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('appId').value;
+            const payload = {
+                appointmentTime: document.getElementById('appTime').value,
+                doctor: { id: document.getElementById('doctorSelect').value },
+                patient: { id: document.getElementById('patientSelect').value }
+            };
+            const url = id ? `/api/appointments/update/${id}` : '/api/appointments/add';
+            await fetch(url, { method: id ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            resetForm();
+            loadData();
+        });
+
+        async function deleteApp(id) {
+            if(confirm('¿Cancelar esta cita?')) {
+                await fetch(`/api/appointments/delete/${id}`, { method: 'DELETE' });
+                loadData();
+            }
+        }
+
+        function editApp(id, docId, patId, time) {
+            document.getElementById('appId').value = id;
+            document.getElementById('doctorSelect').value = docId;
+            document.getElementById('patientSelect').value = patId;
+            document.getElementById('appTime').value = time.substring(0, 16);
+            document.getElementById('formTitle').innerText = "Reprogramar Cita";
+            document.getElementById('btnCancel').classList.remove('d-none');
+        }
+
+        function resetForm() {
+            document.getElementById('appointmentForm').reset();
+            document.getElementById('appId').value = '';
+            document.getElementById('formTitle').innerText = "Agendar Cita";
+            document.getElementById('btnCancel').classList.add('d-none');
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>

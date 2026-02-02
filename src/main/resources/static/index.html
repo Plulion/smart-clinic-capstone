@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Smart Clinic - Webfinanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero-section { background: linear-gradient(135deg, #0d6efd 0%, #003d99 100%); color: white; padding: 60px 0; margin-bottom: 40px; border-radius: 0 0 50px 50px; shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .menu-card { transition: all 0.3s ease; border: none; border-radius: 20px; overflow: hidden; cursor: pointer; }
+        .menu-card:hover { transform: translateY(-12px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .icon-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.5rem; }
+        .bg-doctor { background-color: #e7f1ff; color: #0d6efd; }
+        .bg-patient { background-color: #e6fcf5; color: #20c997; }
+        .bg-appointment { background-color: #fff4e6; color: #fd7e14; }
+    </style>
+</head>
+<body>
+
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold">Smart Clinic Dashboard</h1>
+        <p class="lead">Gestión Médica Integral | Pedro Stephen Lulion Pasten</p>
+        <span class="badge bg-light text-primary px-3 py-2">Versión 2.0 - Capstone Project</span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4 justify-content-center">
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm menu-card p-4 text-center" onclick="location.href='admin.html'">
+                <div class="icon-circle bg-doctor">👨‍⚕️</div>
+                <h3 class="fw-bold">Doctores</h3>
+                <p class="text-muted">Registro de nuevos especialistas y visualización del staff médico activo.</p>
+                <div class="mt-auto">
+                    <span class="btn btn-primary w-100">Gestionar Staff</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm menu-card p-4 text-center" onclick="location.href='patients.html'">
+                <div class="icon-circle bg-patient">👤</div>
+                <h3 class="fw-bold">Pacientes</h3>
+                <p class="text-muted">Administración de la base de datos de pacientes y registro de ingresos.</p>
+                <div class="mt-auto">
+                    <span class="btn btn-success w-100">Ver Pacientes</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm menu-card p-4 text-center" onclick="location.href='appointments.html'">
+                <div class="icon-circle bg-appointment">📅</div>
+                <h3 class="fw-bold">Citas Médicas</h3>
+                <p class="text-muted">Agenda de consultas vinculando automáticamente doctores con pacientes.</p>
+                <div class="mt-auto">
+                    <span class="btn btn-warning w-100">Agendar Cita</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="mt-5 pt-5 pb-3 text-center text-muted border-top">
+        <p>© 2026 Webfinanzas - Servicios Integrales en Informática</p>
+    </footer>
+</div>
+
+</body>
+</html>
