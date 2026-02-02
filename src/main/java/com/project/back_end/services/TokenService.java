@@ -1,19 +1,20 @@
 package com.project.back_end.services;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
-import java.security.Key;
+import java.util.Date;
 
 @Service
 public class TokenService {
-    private String secret = "esta_es_una_clave_secreta_muy_larga_para_jwt_256_bits";
+    private final String SECRET = "Webfinanzas_AI_2026";
 
-    public String generate(String email) {
-        return Jwts.builder().setSubject(email).compact();
-    }
-
-    public Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+    public String generateToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date()) // Requerido
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora; Requerido
+                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .compact();
     }
 }

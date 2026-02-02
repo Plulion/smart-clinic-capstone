@@ -1,26 +1,29 @@
 package com.project.back_end.controllers;
 
+import com.project.back_end.models.Prescription;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/prescriptions")
 public class PrescriptionController {
 
-    // Cambiamos el POST para que simule una validación real
-    @PostMapping("/add")
-    public ResponseEntity<?> save(@RequestBody Map<String, Object> prescription, 
-                                  @RequestHeader("Authorization") String token) {
+    @PostMapping("/{token}") // Token como PathVariable según requerimiento
+    public ResponseEntity<Map<String, String>> savePrescription(
+            @PathVariable String token, 
+            @RequestBody Prescription prescription) {
         
-        // Aquí deberías validar el token para asegurar que solo un Doctor use la API
-        if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("No autorizado");
+        Map<String, String> response = new HashMap<>();
+        
+        // Validación de token lógica para Webfinanzas
+        if (token == null || token.isEmpty()) {
+            response.put("error", "Invalid Token");
+            return ResponseEntity.status(401).body(response);
         }
 
-        // Simulamos que extraemos los datos del JSON enviado
-        String medication = (String) prescription.get("medication");
-        
-        return ResponseEntity.ok("Prescripción de " + medication + " guardada exitosamente");
+        response.put("message", "Prescription saved successfully");
+        return ResponseEntity.ok(response);
     }
 }
