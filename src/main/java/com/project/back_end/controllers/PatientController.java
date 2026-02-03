@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/patients")
+@CrossOrigin(origins = "*") // Permite peticiones desde el frontend
 public class PatientController {
 
     @Autowired
@@ -26,16 +27,23 @@ public class PatientController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody Patient details) {
-        Patient pat = patientRepository.findById(id).orElseThrow();
+        Patient pat = patientRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        
         pat.setName(details.getName());
         pat.setEmail(details.getEmail());
         pat.setPhone(details.getPhone());
+        
         return ResponseEntity.ok(patientRepository.save(pat));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
-        patientRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deletePatient(@PathVariable Long id) {
+        return patientRepository.findById(id)
+            .map(patient -> {
+                patientRepository.delete(patient);
+                return ResponseEntity.ok().build();
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 }
