@@ -1,30 +1,26 @@
 package com.project.back_end.controllers;
 
-import com.project.back_end.services.DoctorService;
+import com.project.back_end.models.Doctor;
+import com.project.back_end.services.DoctorService; // Importar el servicio
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/doctors")
+@CrossOrigin(origins = "*")
 public class DoctorController {
 
     @Autowired
-    private DoctorService doctorService;
+    private DoctorService doctorService; // Usar el servicio en lugar del repo directamente
 
-    // Endpoint corregido con PathVariables y validación de Token
-    @GetMapping("/availability/{id}/{date}")
-    public ResponseEntity<List<String>> getAvailability(
-            @PathVariable Long id, 
-            @PathVariable String date,
-            @RequestHeader("Authorization") String token) {
-        
-        // Simulación de validación de token para Webfinanzas
-        if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).build();
-        }
+    @GetMapping
+    public List<Doctor> getAllDoctors() {
+        return doctorService.getAllDoctors();
+    }
 
-        return ResponseEntity.ok(doctorService.getAvailableSlots(id, date));
+    @PostMapping
+    public Doctor createDoctor(@RequestBody Doctor doctor) {
+        return doctorService.saveDoctor(doctor);
     }
 }
