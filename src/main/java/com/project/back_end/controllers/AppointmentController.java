@@ -9,32 +9,24 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointments")
+@CrossOrigin(origins = "*")
 public class AppointmentController {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    @PostMapping("/add")
-    public ResponseEntity<Appointment> add(@RequestBody Appointment appointment) {
+    @GetMapping
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
+
+    @PostMapping
+    public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment) {
         return ResponseEntity.ok(appointmentRepository.save(appointment));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Appointment>> getAll() {
-        return ResponseEntity.ok(appointmentRepository.findAll());
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Appointment> update(@PathVariable Long id, @RequestBody Appointment details) {
-        Appointment app = appointmentRepository.findById(id).orElseThrow();
-        app.setAppointmentTime(details.getAppointmentTime());
-        app.setDoctor(details.getDoctor());
-        app.setPatient(details.getPatient());
-        return ResponseEntity.ok(appointmentRepository.save(app));
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         appointmentRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
