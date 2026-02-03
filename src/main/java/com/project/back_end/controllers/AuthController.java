@@ -2,7 +2,7 @@ package com.project.back_end.controllers;
 
 import com.project.back_end.services.TokenService;
 import com.project.back_end.models.User;
-import com.project.back_end.repo.UserRepository; // IMPORT CORREGIDO
+import com.project.back_end.repo.UserRepository; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,6 @@ public class AuthController {
     }
 }
 
-// ESTAS CLASES DEBEN ESTAR AQUÍ PARA ELIMINAR LAS LÍNEAS ROJAS
 class LoginRequest {
     private String email;
     private String password;
