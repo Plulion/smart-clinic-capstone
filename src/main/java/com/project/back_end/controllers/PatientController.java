@@ -3,7 +3,6 @@ package com.project.back_end.controllers;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,20 +14,21 @@ public class PatientController {
     @Autowired
     private PatientRepository patientRepository;
 
-    @GetMapping
+    // Esta es la ruta exacta que falló con 404 en tu consola
+    @GetMapping("/all")
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
 
-    @PostMapping
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
-        // Guardamos el paciente y devolvemos respuesta 200 OK
-        return ResponseEntity.ok(patientRepository.save(patient));
+    // Esta es la ruta exacta para registrar desde el formulario
+    @PostMapping("/add")
+    public Patient createPatient(@RequestBody Patient patient) {
+        return patientRepository.save(patient);
     }
 
+    // Agregamos eliminar por si el HTML lo requiere (como en Doctores)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
+    public void deletePatient(@PathVariable Long id) {
         patientRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }
