@@ -7,7 +7,7 @@
     <style>
         body { background-color: #f8f9fa; }
         .card-doctor { border-left: 5px solid #0d6efd; transition: 0.3s; }
-        .navbar-brand { font-weight: bold; } /* Corrección del error en rojo */
+        .card-doctor:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body class="container py-5">
@@ -16,16 +16,19 @@
     <div class="row justify-content-center mb-5">
         <div class="col-md-8">
             <div class="card shadow border-0">
-                <div class="card-header bg-primary text-white"><h4 class="mb-0" id="formTitle">Registrar Doctor</h4></div>
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0" id="formTitle">Registrar Doctor</h4>
+                </div>
                 <div class="card-body">
                     <form id="doctorForm">
-                        <input type="hidden" id="docId"> <div class="mb-3">
+                        <input type="hidden" id="docId"> 
+                        <div class="mb-3">
                             <label class="form-label fw-bold">Nombre Completo:</label>
-                            <input type="text" id="name" class="form-control" required>
+                            <input type="text" id="name" class="form-control" placeholder="Ej: Pedro Stephen Lulion Pasten" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Especialidad:</label>
-                            <input type="text" id="specialty" class="form-control" required>
+                            <input type="text" id="specialty" class="form-control" placeholder="Ej: AI Engineer" required>
                         </div>
                         <button type="submit" id="btnSubmit" class="btn btn-primary w-100">Guardar Doctor</button>
                         <button type="button" id="btnCancel" class="btn btn-secondary w-100 mt-2 d-none" onclick="cancelEdit()">Cancelar Edición</button>
@@ -38,36 +41,52 @@
     <div id="lista" class="row g-4"></div>
 
     <script>
+        // Simulamos el token que obtuviste en el login (Pregunta 9)
+        const token = "Bearer " + localStorage.getItem('token');
+
         async function cargarDoctores() {
             const listaDiv = document.getElementById('lista');
-            const res = await fetch('/api/doctors/all');
-            const doctores = await res.json();
-            listaDiv.innerHTML = doctores.map(doc => `
-                <div class="col-md-4">
-                    <div class="card shadow-sm h-100 card-doctor">
-                        <div class="card-body">
-                            <h5 class="text-primary">${doc.name}</h5>
-                            <p><strong>Especialidad:</strong> ${doc.specialty}</p>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-warning" onclick="editDoctor(${doc.id}, '${doc.name}', '${doc.specialty}')">Editar</button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="eliminarDoctor(${doc.id})">Eliminar</button>
+            try {
+                const res = await fetch('/api/doctors', { // Ruta base de tu Controller
+                    headers: { 'Authorization': token }
+                });
+                if (!res.ok) throw new Error("No autorizado");
+                const doctores = await res.json();
+                listaDiv.innerHTML = doctores.map(doc => `
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100 card-doctor">
+                            <div class="card-body">
+                                <h5 class="text-primary">${doc.name}</h5>
+                                <p><strong>Especialidad:</strong> ${doc.specialty}</p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-warning" onclick="editDoctor(${doc.id}, '${doc.name}', '${doc.specialty}')">Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarDoctor(${doc.id})">Eliminar</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>`).join('');
+                    </div>`).join('');
+            } catch (err) {
+                listaDiv.innerHTML = `<p class="text-center text-danger">Error al cargar datos. Verifica el Login.</p>`;
+            }
         }
 
         document.getElementById('doctorForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('docId').value;
-            const data = { name: document.getElementById('name').value, specialty: document.getElementById('specialty').value };
+            const data = { 
+                name: document.getElementById('name').value, 
+                specialty: document.getElementById('specialty').value 
+            };
             
-            const url = id ? `/api/doctors/update/${id}` : '/api/doctors/add';
+            const url = id ? `/api/doctors/${id}` : '/api/doctors';
             const method = id ? 'PUT' : 'POST';
 
             await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': token 
+                },
                 body: JSON.stringify(data)
             });
 
@@ -94,8 +113,11 @@
         }
 
         async function eliminarDoctor(id) {
-            if(confirm('¿Seguro que desea eliminar este registro?')) {
-                await fetch(`/api/doctors/delete/${id}`, { method: 'DELETE' });
+            if(confirm('¿Seguro que desea eliminar a este doctor?')) {
+                await fetch(`/api/doctors/${id}`, { 
+                    method: 'DELETE',
+                    headers: { 'Authorization': token }
+                });
                 cargarDoctores();
             }
         }
