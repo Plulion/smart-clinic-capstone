@@ -1,7 +1,7 @@
 package com.project.back_end.controllers;
 
 import com.project.back_end.models.Doctor;
-import com.project.back_end.services.DoctorService; // Importar el servicio
+import com.project.back_end.services.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class DoctorController {
 
     @Autowired
-    private DoctorService doctorService; // Usar el servicio en lugar del repo directamente
+    private DoctorService doctorService;
 
     @GetMapping
     public List<Doctor> getAllDoctors() {
@@ -22,5 +22,11 @@ public class DoctorController {
     @PostMapping
     public Doctor createDoctor(@RequestBody Doctor doctor) {
         return doctorService.saveDoctor(doctor);
+    }
+
+    // Nueva ruta para capturar el clic en "Eliminar"
+    @DeleteMapping("/{id}")
+    public void deleteDoctor(@PathVariable Long id) {
+        doctorService.deleteDoctor(id);
     }
 }

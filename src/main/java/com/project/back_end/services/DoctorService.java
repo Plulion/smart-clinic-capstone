@@ -19,4 +19,9 @@ public class DoctorService {
     public Doctor saveDoctor(Doctor doctor) {
         return doctorRepository.save(doctor);
     }
+
+    // Nueva función para eliminar
+    public void deleteDoctor(Long id) {
+        doctorRepository.deleteById(id);
+    }
 }
